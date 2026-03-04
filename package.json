@@ -1,0 +1,12 @@
+{
+  "name": "kaizen-backend-api",
+  "version": "1.0.0",
+  "description": "Backend for Kaizen app (Self-improvement gamified.)",
+  "license": "ISC",
+  "author": "Adhvaith Kul",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
