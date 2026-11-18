@@ -3,7 +3,10 @@ import { supabase } from '../../config/supabase.js';
 
 export const uploadProfileImage = async (req, res, next) => {
   try {
-    const userId = req.body.userId || req.user?.userId || 'unknown-user';
+    const userId = req.user?.userId || req.body.userId || 'unknown-user';
+    if (req.body.userId && req.user?.userId && req.body.userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot upload profile image for another user' });
+    }
     let fileBuffer;
     let contentType = 'image/jpeg';
     let ext = 'jpg';
@@ -49,7 +52,10 @@ export const uploadProfileImage = async (req, res, next) => {
 
 export const uploadHabitImage = async (req, res, next) => {
   try {
-    const userId = req.body.userId || req.user?.userId || 'unknown-user';
+    const userId = req.user?.userId || req.body.userId || 'unknown-user';
+    if (req.body.userId && req.user?.userId && req.body.userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot upload habit image for another user' });
+    }
     const habitId = req.body.habitId || 'habit';
     const date = req.body.date || new Date().toISOString().split('T')[0];
     let fileBuffer;

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'kaizen-jwt-secret-key-change-in-production';
+export const JWT_SECRET = process.env.JWT_SECRET || 'kaizen-jwt-secret-key-change-in-production';
 
 export const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;

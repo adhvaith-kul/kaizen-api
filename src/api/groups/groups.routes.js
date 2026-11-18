@@ -8,16 +8,16 @@ import {
   deleteGroup,
   getLeaderboard,
 } from './groups.controller.js';
-import { optionalAuth } from '../../middleware/auth.js';
+import { auth } from '../../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', optionalAuth, createGroup);
-router.post('/join', optionalAuth, joinGroupByCode);
-router.get('/code/:code', optionalAuth, getGroupByCode);
-router.get('/user/:userId', optionalAuth, getUserGroups);
-router.patch('/:id', optionalAuth, updateGroup);
-router.delete('/:id', optionalAuth, deleteGroup);
-router.get('/:id/leaderboard', optionalAuth, getLeaderboard);
+router.post('/', auth, createGroup);
+router.post('/join', auth, joinGroupByCode);
+router.get('/code/:code', auth, getGroupByCode);
+router.get('/user/:userId', auth, getUserGroups);
+router.patch('/:id', auth, updateGroup);
+router.delete('/:id', auth, deleteGroup);
+router.get('/:id/leaderboard', auth, getLeaderboard);
 
 export default router;

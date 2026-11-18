@@ -83,9 +83,13 @@ export const recalculateGroupPoints = async (groupId) => {
 export const createGroup = async (req, res, next) => {
   try {
     const { name, userId, settings } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user.userId;
 
-    if (!name || !effectiveUserId) {
+    if (userId && userId !== effectiveUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only create squads for yourself' });
+    }
+
+    if (!name) {
       return res.status(400).json({ error: 'Name and userId are required' });
     }
 
@@ -147,9 +151,13 @@ export const getGroupByCode = async (req, res, next) => {
 export const joinGroupByCode = async (req, res, next) => {
   try {
     const { code, userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user.userId;
 
-    if (!code || !effectiveUserId) {
+    if (userId && userId !== effectiveUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only join squads for yourself' });
+    }
+
+    if (!code) {
       return res.status(400).json({ error: 'Code and userId are required' });
     }
 
@@ -184,6 +192,10 @@ export const joinGroupByCode = async (req, res, next) => {
 export const getUserGroups = async (req, res, next) => {
   try {
     const { userId } = req.params;
+    if (userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: You can only view your own squads' });
+    }
+
     const { data: members } = await supabase
       .from('members')
       .select('group_id')
@@ -215,6 +227,19 @@ export const updateGroup = async (req, res, next) => {
     const { id } = req.params;
     const { name, settings } = req.body;
 
+    const { data: group, error: fetchErr } = await supabase
+      .from('groups')
+      .select('created_by')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) return res.status(400).json({ error: fetchErr.message });
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    if (group.created_by !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Only the squad creator can modify this squad' });
+    }
+
     const { error } = await supabase.from('groups').update({ name, settings }).eq('id', id);
     if (error) return res.status(400).json({ error: error.message });
 
@@ -227,6 +252,20 @@ export const updateGroup = async (req, res, next) => {
 export const deleteGroup = async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    const { data: group, error: fetchErr } = await supabase
+      .from('groups')
+      .select('created_by')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) return res.status(400).json({ error: fetchErr.message });
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    if (group.created_by !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Only the squad creator can delete this squad' });
+    }
+
     const { error } = await supabase.from('groups').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) return res.status(400).json({ error: error.message });
 

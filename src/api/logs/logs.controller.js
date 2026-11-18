@@ -11,10 +11,10 @@ export const getISTDate = () => {
 export const getTodayLog = async (req, res, next) => {
   try {
     const { userId, groupId } = req.query;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user.userId;
 
-    if (!effectiveUserId) {
-      return res.status(400).json({ error: 'userId is required' });
+    if (userId && userId !== effectiveUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only view your own logs' });
     }
 
     const date = getISTDate();
@@ -53,9 +53,13 @@ export const getTodayLog = async (req, res, next) => {
 export const toggleHabit = async (req, res, next) => {
   try {
     const { userId, groupId, habitId, imageUrl, caption } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user.userId;
 
-    if (!effectiveUserId || !habitId) {
+    if (userId && userId !== effectiveUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only toggle your own habits' });
+    }
+
+    if (!habitId) {
       return res.status(400).json({ error: 'userId and habitId are required' });
     }
 
@@ -139,7 +143,10 @@ export const suspectLog = async (req, res, next) => {
   try {
     const { id: logId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform action on behalf of another user' });
+    }
 
     const { data: logData } = await supabase.from('logs').select('user_id, group_id').eq('id', logId).single();
     if (!logData) return res.status(404).json({ error: 'Log not found' });
@@ -163,7 +170,10 @@ export const unsuspectLog = async (req, res, next) => {
   try {
     const { id: logId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform action on behalf of another user' });
+    }
 
     const { data: logData } = await supabase.from('logs').select('user_id, group_id').eq('id', logId).single();
     if (!logData) return res.status(404).json({ error: 'Log not found' });
@@ -189,7 +199,10 @@ export const likeLog = async (req, res, next) => {
   try {
     const { id: logId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform action on behalf of another user' });
+    }
 
     const { error } = await supabase
       .from('likes')
@@ -206,7 +219,10 @@ export const unlikeLog = async (req, res, next) => {
   try {
     const { id: logId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform action on behalf of another user' });
+    }
 
     const { error } = await supabase
       .from('likes')
@@ -254,7 +270,10 @@ export const addComment = async (req, res, next) => {
   try {
     const { id: logId } = req.params;
     const { userId, text } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform action on behalf of another user' });
+    }
 
     if (!text) {
       return res.status(400).json({ error: 'Text is required' });

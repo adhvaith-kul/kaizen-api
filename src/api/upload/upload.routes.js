@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { uploadProfileImage, uploadHabitImage } from './upload.controller.js';
-import { optionalAuth } from '../../middleware/auth.js';
+import { auth } from '../../middleware/auth.js';
 
 const router = express.Router();
 
@@ -11,8 +11,8 @@ const upload = multer({
   limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB limit
 });
 
-router.post('/profile', optionalAuth, upload.single('image'), uploadProfileImage);
-router.post('/habit', optionalAuth, upload.single('image'), uploadHabitImage);
-router.post('/', optionalAuth, upload.single('image'), uploadHabitImage);
+router.post('/profile', auth, upload.single('image'), uploadProfileImage);
+router.post('/habit', auth, upload.single('image'), uploadHabitImage);
+router.post('/', auth, upload.single('image'), uploadHabitImage);
 
 export default router;

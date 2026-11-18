@@ -12,21 +12,21 @@ import {
   getFollowers,
   searchUsers,
 } from './users.controller.js';
-import { optionalAuth } from '../../middleware/auth.js';
+import { auth } from '../../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/search', optionalAuth, searchUsers);
-router.get('/:id', optionalAuth, getUser);
-router.patch('/:id/avatar', optionalAuth, updateUserAvatar);
-router.get('/:id/stats', optionalAuth, getProfileStats);
-router.get('/:id/logs', optionalAuth, getUserLogs);
-router.get('/:id/feed', optionalAuth, getUserFeed);
+router.get('/search', auth, searchUsers);
+router.get('/:id', auth, getUser);
+router.patch('/:id/avatar', auth, updateUserAvatar);
+router.get('/:id/stats', auth, getProfileStats);
+router.get('/:id/logs', auth, getUserLogs);
+router.get('/:id/feed', auth, getUserFeed);
 
-router.post('/:id/follow/:targetId', optionalAuth, followUser);
-router.delete('/:id/follow/:targetId', optionalAuth, unfollowUser);
-router.get('/:id/is-following/:targetId', optionalAuth, isFollowing);
-router.get('/:id/following', optionalAuth, getFollowing);
-router.get('/:id/followers', optionalAuth, getFollowers);
+router.post('/:id/follow/:targetId', auth, followUser);
+router.delete('/:id/follow/:targetId', auth, unfollowUser);
+router.get('/:id/is-following/:targetId', auth, isFollowing);
+router.get('/:id/following', auth, getFollowing);
+router.get('/:id/followers', auth, getFollowers);
 
 export default router;

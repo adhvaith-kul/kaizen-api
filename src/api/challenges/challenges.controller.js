@@ -24,7 +24,11 @@ export const getChallenges = async (req, res, next) => {
 export const getUserChallenge = async (req, res, next) => {
   try {
     const { id: challengeId, userId } = req.params;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: "Forbidden: Cannot access another user's challenge" });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -68,7 +72,11 @@ export const joinChallenge = async (req, res, next) => {
   try {
     const { id: challengeId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot join challenge on behalf of another user' });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -133,7 +141,11 @@ export const getChallengeHabits = async (req, res, next) => {
   try {
     const { id: challengeId } = req.params;
     const { userId } = req.query;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: "Forbidden: Cannot access another user's challenge habits" });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -166,8 +178,12 @@ export const getChallengeLogs = async (req, res, next) => {
   try {
     const { id: challengeId } = req.params;
     const { userId, date } = req.query;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
     const effectiveDate = date || getISTDate();
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: "Forbidden: Cannot access another user's challenge logs" });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });
@@ -212,7 +228,11 @@ export const syncChallengeStreak = async (req, res, next) => {
   try {
     const { id: challengeId } = req.params;
     const { userId } = req.body;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot sync streak on behalf of another user' });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });

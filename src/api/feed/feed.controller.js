@@ -3,7 +3,11 @@ import { supabase } from '../../config/supabase.js';
 export const getFeed = async (req, res, next) => {
   try {
     const { userId } = req.query;
-    const effectiveUserId = userId || req.user?.userId;
+    const effectiveUserId = req.user?.userId || userId;
+
+    if (userId && req.user?.userId && userId !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot access feed of another user' });
+    }
 
     if (!effectiveUserId) {
       return res.status(400).json({ error: 'userId is required' });

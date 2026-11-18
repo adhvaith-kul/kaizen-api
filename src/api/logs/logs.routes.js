@@ -10,19 +10,19 @@ import {
   addComment,
   getPostDetail,
 } from './logs.controller.js';
-import { optionalAuth } from '../../middleware/auth.js';
+import { auth } from '../../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/today', optionalAuth, getTodayLog);
-router.post('/toggle', optionalAuth, toggleHabit);
+router.get('/today', auth, getTodayLog);
+router.post('/toggle', auth, toggleHabit);
 
-router.get('/:id', optionalAuth, getPostDetail);
-router.post('/:id/suspect', optionalAuth, suspectLog);
-router.post('/:id/unsuspect', optionalAuth, unsuspectLog);
-router.post('/:id/like', optionalAuth, likeLog);
-router.post('/:id/unlike', optionalAuth, unlikeLog);
-router.get('/:id/comments', optionalAuth, getComments);
-router.post('/:id/comments', optionalAuth, addComment);
+router.get('/:id', auth, getPostDetail);
+router.post('/:id/suspect', auth, suspectLog);
+router.post('/:id/unsuspect', auth, unsuspectLog);
+router.post('/:id/like', auth, likeLog);
+router.post('/:id/unlike', auth, unlikeLog);
+router.get('/:id/comments', auth, getComments);
+router.post('/:id/comments', auth, addComment);
 
 export default router;

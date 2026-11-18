@@ -28,6 +28,10 @@ export const updateUserAvatar = async (req, res, next) => {
     const { id } = req.params;
     const { avatarUrl } = req.body;
 
+    if (req.user?.userId && id !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot update avatar for another user' });
+    }
+
     const { error } = await supabase
       .from('users')
       .update({ avatar_url: avatarUrl })
@@ -194,6 +198,9 @@ export const getUserFeed = async (req, res, next) => {
 export const followUser = async (req, res, next) => {
   try {
     const { id, targetId } = req.params;
+    if (req.user?.userId && id !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform follow action for another user' });
+    }
     const followerId = req.user?.userId || id;
     const { error } = await supabase.from('follows').insert({ follower_id: followerId, following_id: targetId });
     if (error) return res.status(400).json({ error: error.message });
@@ -206,6 +213,9 @@ export const followUser = async (req, res, next) => {
 export const unfollowUser = async (req, res, next) => {
   try {
     const { id, targetId } = req.params;
+    if (req.user?.userId && id !== req.user.userId) {
+      return res.status(403).json({ error: 'Forbidden: Cannot perform unfollow action for another user' });
+    }
     const followerId = req.user?.userId || id;
     const { error } = await supabase
       .from('follows')
