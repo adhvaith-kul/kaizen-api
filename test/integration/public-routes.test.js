@@ -4,8 +4,14 @@ import request from 'supertest';
 import app from '../../src/app.js';
 
 describe('Integration Tests: Public Endpoints', () => {
-  it('GET / should return 200 with service status message', async () => {
+  it('GET / should return 200 with landing page HTML', async () => {
     const res = await request(app).get('/');
+    assert.strictEqual(res.status, 200);
+    assert.ok(res.headers['content-type'].includes('text/html'), 'Should serve HTML');
+  });
+
+  it('GET /status should return 200 with service status message', async () => {
+    const res = await request(app).get('/status');
     assert.strictEqual(res.status, 200);
     assert.strictEqual(res.body.message, 'Kaizen API is running!');
   });
