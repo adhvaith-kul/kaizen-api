@@ -1,12 +1,26 @@
 {
-  "name": "kaizen-backend-api",
+  "name": "kaizen-api",
   "version": "1.0.0",
-  "description": "Backend for Kaizen app (Self-improvement gamified.)",
-  "license": "ISC",
-  "author": "Adhvaith Kul",
+  "description": "Backend API for Kaizen (Self-improvement gamified)",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.42.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.1.1",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
   }
 }
