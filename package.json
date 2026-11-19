@@ -25,5 +25,8 @@
   "devDependencies": {
     "supertest": "^7.0.0",
     "wrangler": "^4.165.0"
+  },
+  "overrides": {
+    "iconv-lite": "^0.6.3"
   }
 }
