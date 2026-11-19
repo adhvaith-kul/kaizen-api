@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { log, errorLog } from './utils/logger.js';
 import apiRoutes from './api/index.js';
@@ -11,8 +12,15 @@ import { query } from './config/db.js';
 dotenv.config();
 process.env.TZ = 'Asia/Kolkata';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let currentDir = process.cwd();
+try {
+  if (typeof import.meta !== 'undefined' && typeof import.meta.url === 'string' && import.meta.url.startsWith('file:')) {
+    currentDir = path.dirname(fileURLToPath(import.meta.url));
+  }
+} catch {
+  currentDir = process.cwd();
+}
+const __dirname = currentDir;
 
 const app = express();
 
@@ -22,8 +30,14 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// Serve static assets for the landing page
-app.use('/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
+// Serve static assets for the landing page in local Node environment
+const assetsDir = path.resolve(__dirname, '..', 'public', 'assets');
+const altAssetsDir = path.resolve(process.cwd(), 'public', 'assets');
+if (fs.existsSync(assetsDir)) {
+  app.use('/assets', express.static(assetsDir));
+} else if (fs.existsSync(altAssetsDir)) {
+  app.use('/assets', express.static(altAssetsDir));
+}
 
 app.use(
   morgan('dev', {
@@ -36,7 +50,15 @@ app.use(
 
 // Landing Page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  const landingFile = path.resolve(__dirname, '..', 'public', 'index.html');
+  const altFile = path.resolve(process.cwd(), 'public', 'index.html');
+  if (fs.existsSync(landingFile)) {
+    return res.sendFile(landingFile);
+  }
+  if (fs.existsSync(altFile)) {
+    return res.sendFile(altFile);
+  }
+  res.type('html').send('<!DOCTYPE html><html><body><h1>Kaizen API</h1></body></html>');
 });
 
 // API status (moved from / to /status)
