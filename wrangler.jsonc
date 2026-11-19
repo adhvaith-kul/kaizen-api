@@ -3,16 +3,18 @@
   "name": "kaizen-api",
   "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
-  "compatibility_flags": [
-    "nodejs_compat",
-    "enable_nodejs_http_modules",
-    "enable_nodejs_http_server_modules"
-  ],
+  "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules", "enable_nodejs_http_server_modules"],
   "assets": {
     "directory": "./public",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   "vars": {
-    "MODE": "production"
-  }
+    "MODE": "production",
+  },
+  "observability": {
+    "logs": {
+      "enabled": false,
+      "invocation_logs": true,
+    },
+  },
 }
