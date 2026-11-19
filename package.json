@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "test": "node --test test/**/*.test.js"
+    "test": "node --test test/**/*.test.js",
+    "deploy": "wrangler deploy",
+    "worker:dev": "wrangler dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.42.0",
@@ -21,6 +23,7 @@
     "pg": "^8.11.5"
   },
   "devDependencies": {
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "wrangler": "^4.165.0"
   }
 }
