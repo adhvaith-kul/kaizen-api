@@ -39,14 +39,16 @@ if (fs.existsSync(assetsDir)) {
   app.use('/assets', express.static(altAssetsDir));
 }
 
-app.use(
-  morgan('dev', {
-    skip: () => process.env.NODE_ENV === 'test',
-    stream: {
-      write: (message) => log(message.trim()),
-    },
-  })
-);
+// Safe request logger that does not rely on dynamic eval/new Function (compatible with Cloudflare Workers)
+if (process.env.NODE_ENV !== 'test') {
+  app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+      log(`${req.method} ${req.originalUrl || req.url} ${res.statusCode} ${Date.now() - start}ms`);
+    });
+    next();
+  });
+}
 
 // Landing Page
 app.get('/', (req, res) => {
